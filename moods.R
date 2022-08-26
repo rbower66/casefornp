@@ -35,9 +35,6 @@ mfap4.df <- mfap4.df %>%
                                      TRUE ~ "Stage 4")) %>% 
   mutate(Fibrosis.Stage = as.factor(Fibrosis.Stage))
 
-### Creating the new log_2 transformed MFAP4 variable
-mfap4.df <- mfap4.df %>% mutate(log2MFAP4 = log(mfap4.df$MFAP4, 2))
-
 ### Mood's median test
 mood.medtest(MFAP4 ~ Fibrosis.Stage, data = mfap4.df)
 
