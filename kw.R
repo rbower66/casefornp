@@ -61,8 +61,6 @@ tab<-table(mfap4.df$r)
 group.stat <- mfap4.df %>% group_by(Fibrosis.Stage) %>%
   summarize(mean.rank = mean(r),
             n = n())
-(group.stat$mean.rank[1]-group.stat$mean.rank[2])/
-  sqrt( (n*(n+1)/12 - sum((tab^3-t)/(12*(n-1)))) * (1/group.stat$n[1] + 1/group.stat$n[2]))
 
 results <- dunn_test(MFAP4 ~ Fibrosis.Stage, data = mfap4.df, p.adjust.method = "BH")
 alpha <- 0.05
@@ -84,10 +82,8 @@ for(i in 1:nrow(results)){
               n = n())
   if(results$p.adj[i]<alpha){
     s <- sqrt((n*(n+1)/12 - sum((tab^3-t)/(12*(n-1)))) * (1/group.stat$n[1] + 1/group.stat$n[2]))
-    # results$lwr[i] <- (group.stat$mean.rank[1] - group.stat$mean.rank[2]) - qnorm(1-alpha/2)*s
-    # results$upr[i] <- (group.stat$mean.rank[1] - group.stat$mean.rank[2]) + qnorm(1-alpha/2)*s
-    results$lwr[i] <- -((group.stat$mean.rank[1] - group.stat$mean.rank[2]) + qnorm(1-alpha/2)*s)
-    results$upr[i] <- -((group.stat$mean.rank[1] - group.stat$mean.rank[2]) - qnorm(1-alpha/2)*s)
+    results$lwr[i] <- -((group.stat$mean.rank[1] - group.stat$mean.rank[2]) + qnorm(bh.conf)*s)
+    results$upr[i] <- -((group.stat$mean.rank[1] - group.stat$mean.rank[2]) - qnorm(bh.conf)*s)
   }
   results$diff[i] <- paste(c(results$group2[i], results$group1[i]), collapse=":")
   results$estimate[i] <- -(group.stat$mean.rank[1] - group.stat$mean.rank[2])
