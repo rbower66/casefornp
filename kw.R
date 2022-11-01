@@ -49,9 +49,9 @@ mfap4.df <- mfap4.df %>%
 overall.mean.rank <- mean(mfap4.df$r)
 N <- nrow(mfap4.df)
 (h.obs<-mfap4.df %>% group_by(Fibrosis.Stage) %>%
-    summarize(mean.rank = mean(r),
+    dplyr::summarize(mean.rank = mean(r),
               n = n()) %>%
-    summarize(h = (h.obs<-(N-1)*sum(n*(mean.rank-overall.mean.rank)^2)/
+    dplyr::summarize(h = (h.obs<-(N-1)*sum(n*(mean.rank-overall.mean.rank)^2)/
                      sum((mfap4.df$r - overall.mean.rank)^2))) %>%
     as.numeric())
 t<-5
@@ -59,7 +59,7 @@ t<-5
 n<-nrow(mfap4.df)
 tab<-table(mfap4.df$r)
 group.stat <- mfap4.df %>% group_by(Fibrosis.Stage) %>%
-  summarize(mean.rank = mean(r),
+  dplyr::summarize(mean.rank = mean(r),
             n = n())
 
 results <- dunn_test(MFAP4 ~ Fibrosis.Stage, data = mfap4.df, p.adjust.method = "BH")
@@ -78,10 +78,10 @@ for(i in 1:nrow(results)){
     droplevels()
   # Run Confidence Interval
   group.stat <- dunn.dat %>% group_by(Fibrosis.Stage) %>%
-    summarize(mean.rank = mean(r),
+    dplyr::summarize(mean.rank = mean(r),
               n = n())
   if(results$p.adj[i]<alpha){
-    s <- sqrt((n*(n+1)/12 - sum((tab^3-t)/(12*(n-1)))) * (1/group.stat$n[1] + 1/group.stat$n[2]))
+    s <- sqrt((n*(n+1)/12 - sum((tab^3-tab)/(12*(n-1)))) * (1/group.stat$n[1] + 1/group.stat$n[2]))
     results$lwr[i] <- -((group.stat$mean.rank[1] - group.stat$mean.rank[2]) + qnorm(bh.conf)*s)
     results$upr[i] <- -((group.stat$mean.rank[1] - group.stat$mean.rank[2]) - qnorm(bh.conf)*s)
   }
