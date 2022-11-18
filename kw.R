@@ -90,6 +90,7 @@ for(i in 1:nrow(results)){
 }
 results$diff <- gsub(':', '-', results$diff)
 results
+as.data.frame(results)
 
 ### Plotting the Benjamini-Hochberg adjusted pairwise intervals
 ggplot(data = results, aes(x = diff, y = estimate))+
